@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  spring-app:
+    build: 
+      context: ./backendbtII
+      dockerfile: dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - spring.application.name=backendbtII
+      - amadeus.api.token=$
+      - amadeus.api.key=$
+      - amadeus.api.secret=$
+      - amadeus.api.token.url=$
+      - amadeus.api.base.url=$
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: ["npm", "run", "dev"]
