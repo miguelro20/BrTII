@@ -11,124 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuRadio
 import { parseISO } from "date-fns"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
-
-interface FlightSearchResponse {
-  meta: {
-    totalPages: number
-    totalResults:number
-    currentPage: number
-  }
-  data: FlightOffer[]
-  dictionaries: {
-    locations: {
-      [code:string]: {
-        cityCode: string
-        countryCode: string
-        name?: string
-      }
-    }
-    aircraft: {
-      [code: string]: string
-    }
-    currencies: {
-      [code:string]: string
-    }
-    carriers: {
-      [code:string]: string
-    }
-  }
-}
-
-interface FlightOffer {
-  type: string
-  id: string
-  source: string
-  instantTicketingRequired: boolean
-  nonHomogeneus: boolean
-  oneWay: boolean
-  lastTicketingDate: string
-  numberOfBookableSeats: number
-  itineraries: Itinerary[]
-  price: Price 
-  pricingOptions: {
-    fareType: string[]
-    includedCheckedBagsOnly: boolean
-  }
-  validatingAirlineCodes: string[]
-  travelerPricings: TravelerPricing[]
-}
-
-interface Itinerary {
-  duration: string
-  segments: Segment[]
-}
-
-interface Segment {
-  departure : {
-    iataCode: string 
-    terminal?:string
-    at:string
-  }
-  arrival : {
-    iataCode: string 
-    terminal?:string
-    at:string
-  }
-  carrierCode: string
-  number: string
-  aircraft: {
-    code:string   
-  }
-  operating: {
-    carrierCode: string
-  }
-  duration: string
-  id:string
-  numberOfStops: number
-  blacklistedInEU: boolean
-}
-
-interface Price {
-  currency: string
-  total: string
-  base:string
-  fees: {
-    amount: string
-    type: string
-  }[]
-  grandTotal: string
-}
-
-interface TravelerPricing {
-  travelerId: string
-  fareOption: string
-  travelerType: string
-  price: {
-    currency:string
-    total: string
-    base: string
-
-  }
-  fareDetailsBySegment: {
-    segmentId: string
-    cabin: string
-    fareBasis: string
-    class: string
-    includedCheckedBags: {
-      weight?: number
-      weightUnit?: string
-      quantity?: string
-    }
-    amenities: {
-      description: string
-      isChargeable: boolean
-      amenityType: string
-    }[]
-  }[]
-}
-
-
+import { FlightOffer, FlightSearchResponse, Price, Segment } from "../interfaces/flight-results"
 
 
 export default function FlightsPage() {
@@ -248,10 +131,13 @@ export default function FlightsPage() {
 
   const searchAirports = async (keyword: string) => {
     try {
-      const response = await fetch(`http://localhost:8080/api/flights/airports?keyword=${keyword}&subType=AIRPORT,CITY&limit=1`)
+      // use commented response path and return statements when connecting to AMADEUS API
+      // const response = await fetch(`http://localhost:8080/api/flights/airports?keyword=${keyword}&subType=AIRPORT,CITY&limit=1`)
+      const response = await fetch(`http://localhost:8080/api/flights/fallback-airports?keyword=${keyword}&subType=AIRPORT,CITY&limit=1`)
       const data = await response.json()
       console.log("nombre de ", keyword, data)
-      return data.data[0].name || keyword
+      // return data.data[0].name || keyword
+      return data[0].name
     }
     catch (error){
       console.log(error)

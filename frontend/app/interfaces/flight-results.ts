@@ -44,12 +44,12 @@ export interface FlightOffer {
     travelerPricings: TravelerPricing[]
   }
   
-  interface Itinerary {
+export interface Itinerary {
     duration: string
     segments: Segment[]
   }
   
-  interface Segment {
+export interface Segment {
     departure : {
       iataCode: string 
       terminal?:string

@@ -11,14 +11,8 @@ import { Checkbox } from "../ui/checkbox"
 import useFilters from "@/app/hooks/useFilters"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useRouter } from "next/navigation"
+import { AirportResult } from "@/app/interfaces/flight-results"
 
-interface AirportResult {
-  iataCode: string
-  name?: string
-  city?: string
-  country?:string
-  type: string
-}
 const currencyCodes = [
   {code:"USD", name: "United States Dollar"}, 
   {code: "MXN", name: "Mexican Peso"},
@@ -40,7 +34,7 @@ export default function FlightSearchForm() {
   const [isLoadingOrigin, setIsLoadingOrigin]= useState(false)
   const [isLoadingDestination, setIsLoadingDestination]= useState(false)
   const [departureDate, setDepartureDate]= useState<Date| undefined>(undefined)
-  const [isNonStop, setIsNonStop]= useState(false)
+  const [isNonStop, setIsNonStop]= useState(filters.nonStop==="true")
   const [isRoundTrip, setIsRoundTrip]= useState(false)
   const [returnDate, setReturnDate]= useState<Date| undefined>(undefined)
   const [currencyCode, setCurrencyCode]= useState("USD")
@@ -54,9 +48,12 @@ export default function FlightSearchForm() {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       {typeofAirport ==="origin" ? setIsLoadingOrigin(true) : setIsLoadingDestination(true)}
-      const response = await fetch(`http://localhost:8080/api/flights/airports?keyword=${keyword}&subType=AIRPORT,CITY&limit=10`)
+      // remove word fallback when working with Amadeus API and change return statement
+      const response = await fetch(`http://localhost:8080/api/flights/fallback-airports?keyword=${keyword}&subType=AIRPORT,CITY&limit=10`)
       const data = await response.json()
-      return data.data || []
+      console.log('respuesta origen', data)
+      // return data.data || []
+      return data.data || data
     }
     catch (error){
       console.error("Hubo un error",error)
@@ -133,13 +130,6 @@ export default function FlightSearchForm() {
     setAdults((prev)=> (prev>1 ? prev-1 : 1))
   }
 
-  // const handleSetDepartureDate= (date:Date)=> {
-  //   setFilters((prev)=> ({
-  //     ...prev,
-  //     departureDate: date.toISOString()
-  //   }))
-  //   setDepartureDate(date)
-  // }
 
   useEffect(()=> {
     setFilters((prev)=> ({
@@ -161,9 +151,6 @@ export default function FlightSearchForm() {
       nonStop: checked===true ? "true" : "false"
     }))
     setIsNonStop(checked === true)
-    // if (!checked) {
-    //   setReturnDate(undefined)
-    // }
   }
 
   const handleRoundTrip= (checked:boolean)=> {
@@ -202,7 +189,6 @@ export default function FlightSearchForm() {
           value= {origin}
           onChange={(e)=> setOrigin(e.target.value)}
           className="pl-10"
-          // className={cn("pl-10", errors.origin && "border-destructive")}
           onBlur= { ()=> {
             setTimeout(()=> setShowOriginResults(false), 200)
           }}
@@ -245,7 +231,6 @@ export default function FlightSearchForm() {
           value= {destination}
           onChange={(e)=> setDestination(e.target.value)}
           className="pl-10"
-          // className={cn("pl-10", errors.origin && "border-destructive")}
           onBlur= { ()=> {
             setTimeout(()=> setShowDestinationResults(false), 200)
           }}
