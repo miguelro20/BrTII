@@ -1,5 +1,6 @@
 package com.example.backendbtII.controller;
 
+import com.example.backendbtII.entities.Airport;
 import com.example.backendbtII.service.FlightOfferService;
 import org.springframework.web.bind.annotation.*;
 
@@ -98,5 +99,12 @@ public class Controller {
             @RequestParam String subType,
             @RequestParam int limit) {
         return flightOfferService.getAirports(keyword, subType, limit);
+    }
+
+    @GetMapping("fallback-airports")
+    public List<Airport> searchFallbackAirports(
+            @RequestParam String keyword, @RequestParam(defaultValue = "10") int limit
+    ){
+        return flightOfferService.searchFallbackAirports(keyword, limit);
     }
 }
