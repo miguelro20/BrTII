@@ -350,9 +350,7 @@ export default function FlightSearchForm() {
               </Popover>
             </div>
       )}
-            <Button onClick={handleSearchFlights} type="submit">
-        Search Flights
-      </Button>
+
       <div className="space-y-2 mt-2">
         <Label htmlFor="currencyCode" className="flex items-center">
             Currency <span className="text-destructive ml-1">*</span>
@@ -373,7 +371,9 @@ export default function FlightSearchForm() {
           </SelectContent>
         </Select>
       </div>
-
+      <Button onClick={handleSearchFlights} type="submit">
+        Search Flights
+      </Button>
     </div>
   )
 }
